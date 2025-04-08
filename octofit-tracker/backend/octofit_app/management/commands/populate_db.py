@@ -1,58 +1,70 @@
 from django.core.management.base import BaseCommand
-from django.conf import settings
-from pymongo import MongoClient
 from octofit_app.models import User, Team, Activity, Leaderboard, Workout
-from octofit_tracker.test_data import get_test_data  # Исправленный импорт
+from octofit_tracker.test_data import test_users, test_teams, test_activities, test_leaderboard, test_workouts
 from bson import ObjectId
+from datetime import timedelta
+from pymongo import MongoClient
+from django.conf import settings
 
 class Command(BaseCommand):
     help = 'Populate the database with test data for users, teams, activities, leaderboard, and workouts'
 
     def handle(self, *args, **kwargs):
-        # Подключение к MongoDB
+        # Connect to MongoDB
         client = MongoClient(settings.DATABASES['default']['HOST'], settings.DATABASES['default']['PORT'])
         db = client[settings.DATABASES['default']['NAME']]
 
-        # Очистка коллекций
-        db.users.drop()
-        db.teams.drop()
-        db.activity.drop()
-        db.leaderboard.drop()
-        db.workouts.drop()
+        # Clear existing data
+        db.users.delete_many({})
+        db.teams.delete_many({})
+        db.activity.delete_many({})
+        db.leaderboard.delete_many({})
+        db.workouts.delete_many({})
 
-        # Получение тестовых данных
-        data = get_test_data()
+        # Populate users
+        users = {}
+        for user_data in test_users:
+            user = User.objects.create(
+                _id=ObjectId(),
+                username=user_data['username'],
+                email=user_data['email'],
+                password=user_data['password']
+            )
+            users[user_data['username']] = user
 
-        # Создание пользователей
-        users = [User(**user) for user in data['users']]
-        User.objects.bulk_create(users)
+        # Populate teams
+        for team_data in test_teams:
+            team = Team.objects.create(
+                _id=ObjectId(),
+                name=team_data['name']
+            )
+            for member_username in team_data['members']:
+                team.members.add(users[member_username])
 
-        # Создание команд и назначение участников
-        teams = []
-        for team_data in data['teams']:
-            team = Team(_id=team_data['_id'], name=team_data['name'])
-            team.save()
-            for user in User.objects.all():
-                team.members.add(user)  # Добавление каждого пользователя вручную
-            teams.append(team)
+        # Populate activities
+        for activity_data in test_activities:
+            Activity.objects.create(
+                _id=ObjectId(),
+                user=users[activity_data['user']],
+                activity_type=activity_data['activity_type'],
+                duration=timedelta(hours=int(activity_data['duration'].split(':')[0]),
+                                   minutes=int(activity_data['duration'].split(':')[1]))
+            )
 
-        # Создание активностей
-        for activity_data in data['activities']:
-            user = User.objects.first()  # Получение первого пользователя
-            if user:
-                activity_data['user'] = user  # Назначение пользователя
-                activity = Activity(**activity_data)
-                activity.save()  # Сохранение каждого объекта отдельно
+        # Populate leaderboard
+        for leaderboard_data in test_leaderboard:
+            Leaderboard.objects.create(
+                _id=ObjectId(),
+                user=users[leaderboard_data['user']],
+                score=leaderboard_data['score']
+            )
 
-        # Создание записей таблицы лидеров
-        leaderboard_entries = []
-        for entry_data in data['leaderboard']:
-            entry_data['user'] = User.objects.first()  # Назначение первого пользователя для простоты
-            leaderboard_entries.append(Leaderboard(**entry_data))
-        Leaderboard.objects.bulk_create(leaderboard_entries)
-
-        # Создание тренировок
-        workouts = [Workout(**workout) for workout in data['workouts']]
-        Workout.objects.bulk_create(workouts)
+        # Populate workouts
+        for workout_data in test_workouts:
+            Workout.objects.create(
+                _id=ObjectId(),
+                name=workout_data['name'],
+                description=workout_data['description']
+            )
 
         self.stdout.write(self.style.SUCCESS('Successfully populated the database with test data.'))

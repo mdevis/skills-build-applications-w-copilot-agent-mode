@@ -1,38 +1,38 @@
-from bson import ObjectId
-from datetime import timedelta
+# Test data for OctoFit application
 
-def get_test_data():
-    return {
-        "users": [
-            {"_id": ObjectId(), "username": "thundergod", "email": "thundergod@mhigh.edu", "password": "thundergodpassword"},
-            {"_id": ObjectId(), "username": "metalgeek", "email": "metalgeek@mhigh.edu", "password": "metalgeekpassword"},
-            {"_id": ObjectId(), "username": "zerocool", "email": "zerocool@mhigh.edu", "password": "zerocoolpassword"},
-            {"_id": ObjectId(), "username": "crashoverride", "email": "crashoverride@hmhigh.edu", "password": "crashoverridepassword"},
-            {"_id": ObjectId(), "username": "sleeptoken", "email": "sleeptoken@mhigh.edu", "password": "sleeptokenpassword"},
-        ],
-        "teams": [
-            {"_id": ObjectId(), "name": "Blue Team", "members": []},
-            {"_id": ObjectId(), "name": "Gold Team", "members": []},
-        ],
-        "activities": [
-            {"_id": ObjectId(), "user": None, "activity_type": "Cycling", "duration": timedelta(hours=1)},
-            {"_id": ObjectId(), "user": None, "activity_type": "Crossfit", "duration": timedelta(hours=2)},
-            {"_id": ObjectId(), "user": None, "activity_type": "Running", "duration": timedelta(hours=1, minutes=30)},
-            {"_id": ObjectId(), "user": None, "activity_type": "Strength", "duration": timedelta(minutes=30)},
-            {"_id": ObjectId(), "user": None, "activity_type": "Swimming", "duration": timedelta(hours=1, minutes=15)},
-        ],
-        "leaderboard": [
-            {"_id": ObjectId(), "user": None, "score": 100},
-            {"_id": ObjectId(), "user": None, "score": 90},
-            {"_id": ObjectId(), "user": None, "score": 95},
-            {"_id": ObjectId(), "user": None, "score": 85},
-            {"_id": ObjectId(), "user": None, "score": 80},
-        ],
-        "workouts": [
-            {"_id": ObjectId(), "name": "Cycling Training", "description": "Training for a road cycling event"},
-            {"_id": ObjectId(), "name": "Crossfit", "description": "Training for a crossfit competition"},
-            {"_id": ObjectId(), "name": "Running Training", "description": "Training for a marathon"},
-            {"_id": ObjectId(), "name": "Strength Training", "description": "Training for strength"},
-            {"_id": ObjectId(), "name": "Swimming Training", "description": "Training for a swimming competition"},
-        ],
-    }
+test_users = [
+    {"username": "thundergod", "email": "thundergod@mhigh.edu", "password": "thundergodpassword"},
+    {"username": "metalgeek", "email": "metalgeek@mhigh.edu", "password": "metalgeekpassword"},
+    {"username": "zerocool", "email": "zerocool@mhigh.edu", "password": "zerocoolpassword"},
+    {"username": "crashoverride", "email": "crashoverride@mhigh.edu", "password": "crashoverridepassword"},
+    {"username": "sleeptoken", "email": "sleeptoken@mhigh.edu", "password": "sleeptokenpassword"},
+]
+
+test_teams = [
+    {"name": "Blue Team", "members": ["thundergod", "metalgeek"]},
+    {"name": "Gold Team", "members": ["zerocool", "crashoverride", "sleeptoken"]},
+]
+
+test_activities = [
+    {"user": "thundergod", "activity_type": "Cycling", "duration": "1:00:00"},
+    {"user": "metalgeek", "activity_type": "Crossfit", "duration": "2:00:00"},
+    {"user": "zerocool", "activity_type": "Running", "duration": "1:30:00"},
+    {"user": "crashoverride", "activity_type": "Strength", "duration": "0:30:00"},
+    {"user": "sleeptoken", "activity_type": "Swimming", "duration": "1:15:00"},
+]
+
+test_leaderboard = [
+    {"user": "thundergod", "score": 100},
+    {"user": "metalgeek", "score": 90},
+    {"user": "zerocool", "score": 95},
+    {"user": "crashoverride", "score": 85},
+    {"user": "sleeptoken", "score": 80},
+]
+
+test_workouts = [
+    {"name": "Cycling Training", "description": "Training for a road cycling event"},
+    {"name": "Crossfit", "description": "Training for a crossfit competition"},
+    {"name": "Running Training", "description": "Training for a marathon"},
+    {"name": "Strength Training", "description": "Training for strength"},
+    {"name": "Swimming Training", "description": "Training for a swimming competition"},
+]
